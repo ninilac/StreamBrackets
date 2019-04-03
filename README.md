@@ -1,3 +1,3 @@
-# Streamlabs-Chatbot-Python-Boilerplate
+# Stream Brackets
 
-Information on the Python Scripting Structure for the Streamlabs Chatbot can be located on github Wiki above.
+*Work in progress, will not work in current state
