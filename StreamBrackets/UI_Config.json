@@ -10,31 +10,52 @@
     },
     "fightCommand": {
         "type": "textbox",
-        "value": "!sbfight",
-        "label": "Fight command",
-        "tooltip": "Name of the command to start a fight",
-        "group": "Fight"
+        "value": "!sbstart",
+        "label": "Start bet command",
+        "tooltip": "Name of the command to start a bet",
+        "group": "Bet"
+    },
+    "viewCommand": {
+        "type": "textbox",
+        "value": "!sbview",
+        "label": "View bet command",
+        "tooltip": "Name of the command to lock a bet",
+        "group": "Bet"
+    },
+    "deleteCommand": {
+        "type": "textbox",
+        "value": "!sbdelete",
+        "label": "Delete bet command",
+        "tooltip": "Name of the command to lock a bet",
+        "group": "Bet"
+    },
+    "lockCommand": {
+        "type": "textbox",
+        "value": "!sblock",
+        "label": "Lock bet command",
+        "tooltip": "Name of the command to lock a bet",
+        "group": "Bet"
     },
     "betCommand": {
         "type": "textbox",
         "value": "!sbbet",
         "label": "Bet command",
         "tooltip": "Name of the bet command",
-        "group": "Fight"
+        "group": "Bet"
     },
     "winCommand": {
         "type": "textbox",
         "value": "!sbwin",
         "label": "Win command",
         "tooltip": "Name of the win command",
-        "group": "Fight"
+        "group": "Bet"
     },
     "cancelCommand": {
         "type": "textbox",
         "value": "!sbcancel",
         "label": "Cancel command",
         "tooltip": "Name of the cancel command",
-        "group": "Fight"
+        "group": "Bet"
     },
     "fightPermission": {
       "type": "dropdown",
@@ -46,11 +67,25 @@
         "Moderator",
         "Editor"
       ],
-      "label": "Start fight permission level",
+      "label": "Start bet permission level",
       "tooltip": "Set the permission level for the command",
-      "group": "Fight"
+      "group": "Bet"
     },
-      "betPermission": {
+    "lockPermission": {
+      "type": "dropdown",
+      "value": "Moderator",
+      "items": [
+        "Everyone",
+        "Regular",
+        "Subscriber",
+        "Moderator",
+        "Editor"
+      ],
+      "label": "Lock bet permission level",
+      "tooltip": "Set the permission level for the command",
+      "group": "Bet"
+    },
+    "betPermission": {
       "type": "dropdown",
       "value": "Everyone",
       "items": [
@@ -62,9 +97,9 @@
       ],
       "label": "Bet permission level",
       "tooltip": "Set the permission level for the command",
-      "group": "Fight"
+      "group": "Bet"
     },
-      "winPermission": {
+    "winPermission": {
       "type": "dropdown",
       "value": "Moderator",
       "items": [
@@ -76,9 +111,9 @@
       ],
       "label": "Declare winner permission level",
       "tooltip": "Set the permission level for the command",
-      "group": "Fight"
+      "group": "Bet"
     },
-      "cancelPermission": {
+    "cancelPermission": {
       "type": "dropdown",
       "value": "Moderator",
       "items": [
@@ -88,9 +123,9 @@
         "Moderator",
         "Editor"
       ],
-      "label": "Cancel fight permission level",
+      "label": "Cancel Bet permission level",
       "tooltip": "Set the permission level for the command",
-      "group": "Fight"
+      "group": "Bet"
     },
     "currencyCommand": {
         "type": "textbox",
@@ -106,7 +141,7 @@
         "tooltip": "Currency each viewer starts with when entering the currency command for the first time",
         "group": "Currency"
     },
-    "MyPermission": {
+    "currencyPermission": {
       "type": "dropdown",
       "value": "Everyone",
       "items": [
