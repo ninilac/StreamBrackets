@@ -10,7 +10,7 @@ ScriptName = "Stream Brackets"
 Website = "https://github.com/ninilac/StreamBrackets"
 Description = "Tournament and betting commands for Streamlabs Chatbot"
 Creator = "Ninilac"
-Version = "0.0.5"
+Version = "0.0.6"
 
 configFile = "config.json"
 settings = {}
@@ -21,6 +21,7 @@ bets = {}
 UserBets = {}
 isFighting = False
 isLocked = False
+isMulti = False
 betMultiplier = 2.0
 
 currencies = {}
@@ -84,7 +85,7 @@ def ParseStartBetCommand(message, command):
         else:
             parameters.append(message[i].lower())
     if len(parameters) < 3:
-        Parent.SendStreamMessage("not enough parameters: {} \"[Question]\" [Option_1] [Option_2] [Bet Multiplier]".format(command))
+        Parent.SendStreamMessage("not enough parameters: {} \"[Question]\" [Option_1] [Option_2] [Bet Multiplier] [isMulti]".format(command))
         return [], False
     return parameters, True
 
@@ -95,6 +96,7 @@ def EndFight():
     global options
     global isFighting
     global isLocked
+    global isMulti
     global betMultiplier
 
     bets = {}
@@ -103,6 +105,7 @@ def EndFight():
     isFighting = False
     betMultiplier = 2.0
     isLocked = False
+    isMulti = False
     return
 
 def ScriptToggled(state):
@@ -172,6 +175,29 @@ def ParseCurrency():
         f.close()
     return
 
+def HasBet(userBetList):
+    for bet in userBetList:
+        if bet[0] in options:
+            return True
+    return False
+
+def DeleteBet(data, betOption):
+    found = False
+    for i in range(0, len(UserBets[data.User])):
+        userBet = UserBets[data.User][i]
+        if userBet[0] == betOption:
+            bet = bets[userBet[0]][userBet[1]]
+            refund = bet[2]
+            currencies[bet[0]] = currencies[bet[0]] + refund
+            bets[userBet[0]][userBet[1]] = None
+            UserBets[data.User][i] = ("", 0)
+            currencyName = settings["currencyCommand"][1:len(settings["currencyCommand"])]
+            Parent.SendStreamMessage("{}, deleted bet for {}, you were refunded {} {}".format(data.UserName, betOption, refund, currencyName))
+            found = True
+            break
+    if not found:
+        Parent.SendStreamMessage("{}, You currently have no bet for {}".format(data.UserName, betOption))
+
 def Execute(data):
     global bets
     global UserBets
@@ -179,6 +205,7 @@ def Execute(data):
     global options
     global isFighting
     global isLocked
+    global isMulti
     global betMultiplier
 
     if data.User not in currencies.keys():
@@ -197,8 +224,10 @@ def Execute(data):
                 question = parameters[0]
                 isFighting = True
                 for i in range(1, len(parameters)):
-                    if i == len(parameters)-1 and Is_number(parameters[i]):
+                    if i == 4 and Is_number(parameters[i]):
                         betMultiplier = float(parameters[i])
+                    if i == 5 and parameters[i].lower() == "multi":
+                        isMulti = True
                     else:
                         options.append(parameters[i])
                         bets[parameters[i]] = []
@@ -235,22 +264,7 @@ def Execute(data):
             elif betOption not in bets.keys():
                 Parent.SendStreamMessage("{} is not a betting option right now".format(betOption))
             else:
-                found = False
-                for i in range(0,len(UserBets[data.User])):
-                    userBet = UserBets[data.User][i]
-                    if userBet[0] == betOption:
-                        bet = bets[userBet[0]][userBet[1]]
-                        refund = bet[2]
-                        currencies[bet[0]] = currencies[bet[0]] + refund
-                        bets[userBet[0]][userBet[1]] = None
-                        UserBets[data.User][i] = ("", 0)
-                        currencyName = settings["currencyCommand"][1:len(settings["currencyCommand"])]
-                        Parent.SendStreamMessage("{}, deleted bet for {}, you were refunded {} {}".format(data.UserName, betOption, refund, currencyName))
-                        found = True
-                        break
-                if not found:
-                    Parent.SendStreamMessage("{}, You currently have no bet for {}".format(data.UserName, betOption))
-
+                DeleteBet(data, betOption)
 
         elif command == settings["lockCommand"] and Parent.HasPermission(data.User, settings["lockPermission"], ""):
             if not isFighting:
@@ -292,6 +306,10 @@ def Execute(data):
                                 Parent.SendStreamMessage("{0} just added {1} {2} on his bet on {3}, total bet: {4}".format(data.UserName, betAmount, currencyName, betOption, bets[betOption][userBet[1]][2]))
                                 break
                     if not found:
+                        if not isMulti and HasBet(UserBets[data.User]):
+                            for opt in UserBets[data.User]:
+                                if opt[0] in options:
+                                    DeleteBet(data, opt[0])
                         currencies[data.User] = currencies[data.User] - betAmount
                         bets[betOption].append((data.User, data.UserName, betAmount))
                         UserBets[data.User].append((betOption, len(bets[betOption])-1))
